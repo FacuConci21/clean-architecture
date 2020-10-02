@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Archivo por defecto que se crea para permitir la conexion. -->
+    <script src="/socket.io/socket.io.js"></script>
+    <title>Connect to socket</title>
+</head>
+<body>
+    <p>Look at the console</p>
+
+    <script>
+        let socket = io.connect(`http://localhost:${3000}`, {
+            forceNew: true
+        });
+
+        socket.on('message', (data) => {
+            console.log(data);
+        } );
+    </script>
+</body>
+</html>
