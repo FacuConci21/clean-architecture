@@ -7,13 +7,18 @@ store.addUser = async (user) => {
     return await newUser.save();
 }
 
+store.getUser = async (id, fill) => {
+    const user = await User.find({_id: id},fill);
+    return user;
+}
+
 store.getUsers = async () => {
     const usersList = await User.find();
     return usersList;
 }
 
-store.updateUser = async (id, user) => {
-    return await User.findByIdAndUpdate(id, user);
+store.updateUser = async (id, data) => {
+    return await User.findByIdAndUpdate(id, data, { rawResult: true });
 }
 
 store.deleteUser = async (id) => {

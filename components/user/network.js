@@ -1,9 +1,9 @@
-const controller = require('./controller');
 const router = require('express').Router();
 const response = require('../../network/response');
+const { Controller } = require('./controller');
 
 router.get('/', (req, res) => {
-    controller.getUsers()
+    Controller.getUsers()
         .then( data => {
             response.success(req, res, data, 200);
         })
@@ -12,8 +12,24 @@ router.get('/', (req, res) => {
         });
 });
 
+router.get('/:id', (req, res) => {
+    try{
+        const userController = new Controller(req.params.id);
+
+        userController.getUser(req.query)
+            .then( (user) => {
+                response.success(req, res, user, 200);
+            });
+
+    }catch (error){
+        response.error(req, res, 'Error while getting a user', res.statusCode, error);
+    }
+    
+});
+
 router.post('/', (req, res) => {
-    controller.addUser(req.body.name)
+
+    Controller.addUser(req.body.name)
         .then( data => {
             response.success(req, res, data, 201);
         })
@@ -23,7 +39,10 @@ router.post('/', (req, res) => {
 });
 
 router.patch('/:id', (req, res) => {
-    controller.updateUser(req.params.id, req.body)
+
+    const userController = new Controller(req.params.id);
+    
+    userController.updateUser(req.body)
         .then( (data) => {
             response.success(req, res, data, 200);
         })
@@ -33,9 +52,12 @@ router.patch('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-    controller.deleteUser(req.params.id)
-        .then( (result) => {
-            response.success(req, res, result, 200);
+
+    const userController = new Controller(req.params.id);
+
+    userController.deleteUser()
+        .then( () => {
+            response.success(req, res, 'User deleted.', 200);
         })
         .catch( (err) => {
             response.error(req, res, 'Error while deleting user.', err);

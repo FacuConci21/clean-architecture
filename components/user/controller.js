@@ -1,34 +1,54 @@
-const { response } = require('express');
+const { Types } = require('mongoose');
 const store = require('./store');
 
-const controller = {};
-
-controller.addUser = (name) => {
-    if (!name) {
-        return Promise.reject('Invalid user name.');
+class Controller {
+    constructor(id) {
+        this._id = id;
     }
-
-    const newUser = {
-        name
-    }
-
-    return store.addUser(newUser);
-}
-
-controller.getUsers = () => {
-    try {
-        const userList = store.getUsers();
-
-        return Promise.resolve(userList);
-    } catch (err) {
-        return Promise.reject(err);
-    }
-}
-
-controller.updateUser = async (id, user) => {
-    if (id) {
+    
+    static getUsers() {
         try {
-            const result = await store.updateUser(id, user);
+            const userList = store.getUsers();
+
+            return Promise.resolve(userList);
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }
+
+    static addUser(name) {
+        if (!name) {
+            return Promise.reject('Invalid user name.');
+        }
+
+        const newUser = {
+            name
+        }
+
+        return store.addUser(newUser);
+    }
+
+    getUser(fill) {
+        const user = store.getUser(this._id, fill);
+        return Promise.resolve(user);
+    }
+
+    updateUser = async (update) => {
+        if (update) {
+            try {
+
+                const result = await store.updateUser(this._id, update);
+
+                return Promise.resolve(result);
+            } catch (err) {
+                return Promise.reject(err);
+            }
+        }
+    }
+
+    deleteUser = async () => {
+        try {
+            const result = store.deleteUser(this._id);
 
             return Promise.resolve(result);
         } catch (err) {
@@ -36,21 +56,6 @@ controller.updateUser = async (id, user) => {
         }
     }
 
-    return Promise.reject('No _id given');
-}
+}// class end
 
-controller.deleteUser = async (id) => {
-    if (id) {
-        try {
-            const result = store.deleteUser(id);
-
-            return Promise.resolve(result);
-        } catch (err) {
-            return Promise.reject(err);
-        }
-    }
-
-    return Promise.reject('No id given.');
-}
-
-module.exports = controller;
+module.exports =  {Controller};
